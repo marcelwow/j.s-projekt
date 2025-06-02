@@ -1,0 +1,89 @@
+.task-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.task-item:hover {
+    transform: translateX(5px);
+}
+
+.task-item.done {
+    opacity: 0.7;
+    text-decoration: line-through;
+}
+
+.task-item .priority {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.priority.low {
+    background-color: #28a745;
+}
+
+.priority.medium {
+    background-color: #ffc107;
+}
+
+.priority.high {
+    background-color: #dc3545;
+}
+
+.user-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.user-item:hover {
+    background-color: #e9ecef;
+}
+
+.user-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.task-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.task-actions {
+    float: right;
+}
+
+.task-actions button {
+    margin-left: 5px;
+}
+
+.category-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+}
+
+.category-praca {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.category-nauka {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.category-hobby {
+    background-color: #20c997;
+    color: white;
+} 
