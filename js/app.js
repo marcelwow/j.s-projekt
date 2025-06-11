@@ -1,135 +1,102 @@
-class App {
-    constructor() {
-        this.taskManager = new TaskManager();
-        this.users = [];
-        this.currentUser = null;
-        this.loadUsers();
-        this.initializeEventListeners();
-        this.renderTasks();
-        this.renderUsers();
-    }
-
-    loadUsers() {
-        const savedUsers = localStorage.getItem('users');
-        if (savedUsers) {
-            this.users = JSON.parse(savedUsers);
-        }
-    }
-
-    saveUsers() {
-        localStorage.setItem('users', JSON.stringify(this.users));
-    }
-
-    addUser(username) {
-        const user = new User(username);
-        this.users.push(user);
-        this.saveUsers();
-        this.renderUsers();
-        return user;
-    }
-
-    initializeEventListeners() {
-        // User form submission
-        document.getElementById('userForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            this.addUser(username);
-            document.getElementById('username').value = '';
-        });
-
-        // Task form submission
-        document.getElementById('taskForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (!this.currentUser) {
-                alert('Wybierz użytkownika przed dodaniem zadania!');
-                return;
-            }
-
-            const content = document.getElementById('taskContent').value;
-            const priority = document.getElementById('taskPriority').value;
-            const category = document.getElementById('taskCategory').value;
-
-            this.taskManager.addTask(content, priority, category, this.currentUser.id);
-            this.renderTasks();
-            document.getElementById('taskForm').reset();
-        });
-
-        // Filter buttons
-        document.querySelectorAll('[data-filter]').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const filter = e.target.dataset.filter;
-                this.taskManager.currentFilter = filter;
-                this.renderTasks();
-            });
-        });
-
-        // Task list event delegation
-        document.getElementById('taskList').addEventListener('click', (e) => {
-            const taskItem = e.target.closest('.task-item');
-            if (!taskItem) return;
-
-            const taskId = taskItem.dataset.id;
-
-            if (e.target.classList.contains('toggle-status')) {
-                this.taskManager.toggleTaskStatus(taskId);
-                this.renderTasks();
-            } else if (e.target.classList.contains('delete-task')) {
-                this.taskManager.deleteTask(taskId);
-                this.renderTasks();
-            } else if (e.target.classList.contains('edit-task')) {
-                this.editTask(taskId);
-            }
-        });
-
-        // User list event delegation
-        document.getElementById('userList').addEventListener('click', (e) => {
-            const userItem = e.target.closest('.user-item');
-            if (!userItem) return;
-
-            const userId = userItem.dataset.id;
-            this.currentUser = this.users.find(user => user.id === userId);
-            this.renderUsers();
-            this.renderTasks();
-        });
-    }
-
-    editTask(taskId) {
-        const task = this.taskManager.tasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        const content = prompt('Edytuj treść zadania:', task.content);
-        if (content === null) return;
-
-        const priority = prompt('Edytuj priorytet (low/medium/high):', task.priority);
-        if (priority === null) return;
-
-        const category = prompt('Edytuj kategorię (praca/nauka/hobby):', task.category);
-        if (category === null) return;
-
-        this.taskManager.updateTask(taskId, content, priority, category);
-        this.renderTasks();
-    }
-
-    renderTasks() {
-        const taskList = document.getElementById('taskList');
-        const tasks = this.taskManager.getTasks(
-            this.taskManager.currentFilter,
-            this.currentUser ? this.currentUser.id : null
-        );
-
-        taskList.innerHTML = tasks.map(task => task.toHTML()).join('');
-    }
-
-    renderUsers() {
-        const userList = document.getElementById('userList');
-        userList.innerHTML = this.users.map(user => {
-            const isActive = this.currentUser && this.currentUser.id === user.id;
-            return `<div class="user-item ${isActive ? 'active' : ''}" data-id="${user.id}">${user.username}</div>`;
-        }).join('');
-    }
-}
-
-// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    new App();
+    const taskManager = new TaskManager();
+    const userManager = new UserManager();
+    window.taskManager = taskManager;
+    window.userManager = userManager;
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButton(themeToggle, savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeButton(themeToggle, newTheme);
+    });
+
+    function updateThemeButton(button, theme) {
+        button.innerHTML = theme === 'dark'
+            ? '<i class="bi bi-sun-fill"></i> Jasny motyw'
+            : '<i class="bi bi-moon-fill"></i> Ciemny motyw';
+    }
+
+    // User form handling
+    const userForm = document.getElementById('userForm');
+    userForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('username').value;
+        if (name.trim()) {
+            const user = userManager.addUser(name);
+            // Aktualizuj listę użytkowników w formularzu zadań
+            updateUserSelect();
+            userForm.reset();
+        }
+    });
+
+    // Funkcja aktualizująca listę użytkowników w formularzu zadań
+    function updateUserSelect() {
+        const userSelect = document.getElementById('taskUser');
+        userSelect.innerHTML = '<option value="">Wybierz użytkownika (opcjonalnie)</option>';
+        userManager.users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.name;
+            userSelect.appendChild(option);
+        });
+    }
+
+    // Task form handling
+    const taskForm = document.getElementById('taskForm');
+    taskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const content = document.getElementById('taskContent').value;
+        const priority = document.getElementById('taskPriority').value;
+        const category = document.getElementById('taskCategory').value;
+        const dueDate = document.getElementById('taskDueDate').value || null;
+        const userId = document.getElementById('taskUser').value || null;
+
+        if (content.trim()) {
+            taskManager.addTask(content, priority, category, dueDate, userId);
+            taskForm.reset();
+        }
+    });
+
+    // Filter buttons
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            taskManager.setFilter(button.dataset.filter);
+        });
+    });
+
+    // Sort dropdown
+    const sortDropdown = document.querySelectorAll('[data-sort]');
+    sortDropdown.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            taskManager.setSort(item.dataset.sort);
+            document.getElementById('sortDropdown').textContent = `Sortuj: ${item.textContent}`;
+        });
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('taskSearch');
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            taskManager.setSearch(e.target.value);
+        }, 300);
+    });
+
+    // Initial render
+    taskManager.renderTasks();
+    userManager.renderUsers();
+    updateUserSelect();
 }); 

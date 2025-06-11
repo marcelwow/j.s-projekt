@@ -1,36 +1,82 @@
 class Task {
-    constructor(content, priority = 'medium', category = 'praca', userId = null) {
+    constructor(content, priority, category, dueDate = null, userId = null) {
         this.id = Date.now().toString();
         this.content = content;
-        this.status = 'pending';
         this.priority = priority;
         this.category = category;
+        this.dueDate = dueDate;
         this.userId = userId;
+        this.completed = false;
         this.createdAt = new Date();
     }
 
-    toggleStatus() {
-        this.status = this.status === 'pending' ? 'done' : 'pending';
+    toggleComplete() {
+        this.completed = !this.completed;
     }
 
-    update(content, priority, category) {
-        this.content = content;
-        this.priority = priority;
-        this.category = category;
+    isOverdue() {
+        if (!this.dueDate) return false;
+        return new Date(this.dueDate) < new Date() && !this.completed;
+    }
+
+    getFormattedDueDate() {
+        if (!this.dueDate) return '';
+        return new Date(this.dueDate).toLocaleDateString('pl-PL');
     }
 
     toHTML() {
-        return `
-            <div class="task-item ${this.status}" data-id="${this.id}">
-                <span class="priority ${this.priority}"></span>
-                <span class="task-content">${this.content}</span>
-                <span class="category-badge category-${this.category}">${this.category}</span>
-                <div class="task-actions">
-                    <button class="btn btn-sm btn-outline-primary toggle-status">${this.status === 'pending' ? '✓' : '↩'}</button>
-                    <button class="btn btn-sm btn-outline-secondary edit-task">✎</button>
-                    <button class="btn btn-sm btn-outline-danger delete-task">×</button>
-                </div>
-            </div>
+        const taskElement = document.createElement('div');
+        taskElement.className = `task-item priority-${this.priority} ${this.completed ? 'completed' : ''}`;
+
+        const content = document.createElement('div');
+        content.className = 'task-content';
+        content.textContent = this.content;
+
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+        meta.innerHTML = `
+            <span class="badge bg-${this.getPriorityColor()}">${this.getPriorityLabel()}</span>
+            <span class="badge bg-secondary">${this.category}</span>
+            ${this.dueDate ? `<span class="task-due-date ${this.isOverdue() ? 'overdue' : ''}">Termin: ${this.getFormattedDueDate()}</span>` : ''}
+            ${this.userId ? `<span class="badge bg-info">Użytkownik: ${this.getUserName()}</span>` : ''}
         `;
+
+        const actions = document.createElement('div');
+        actions.className = 'task-actions';
+        actions.innerHTML = `
+            <button class="btn btn-sm btn-${this.completed ? 'warning' : 'success'}" onclick="taskManager.toggleTask('${this.id}')">
+                ${this.completed ? 'Cofnij' : 'Zakończ'}
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="taskManager.deleteTask('${this.id}')">Usuń</button>
+        `;
+
+        taskElement.appendChild(content);
+        taskElement.appendChild(meta);
+        taskElement.appendChild(actions);
+
+        return taskElement;
+    }
+
+    getPriorityColor() {
+        switch(this.priority) {
+            case 'high': return 'danger';
+            case 'medium': return 'primary';
+            case 'low': return 'success';
+            default: return 'secondary';
+        }
+    }
+
+    getPriorityLabel() {
+        switch(this.priority) {
+            case 'high': return 'Wysoki';
+            case 'medium': return 'Średni';
+            case 'low': return 'Niski';
+            default: return 'Nieznany';
+        }
+    }
+
+    getUserName() {
+        const user = window.userManager.getUserById(this.userId);
+        return user ? user.name : 'Nieznany użytkownik';
     }
 } 
