@@ -62,7 +62,12 @@ class UserManager {
     loadFromLocalStorage() {
         const savedUsers = localStorage.getItem('users');
         if (savedUsers) {
-            this.users = JSON.parse(savedUsers);
+            const parsedUsers = JSON.parse(savedUsers);
+            this.users = parsedUsers.map(userData => {
+                const user = new User(userData.name);
+                user.id = userData.id;
+                return user;
+            });
         }
     }
 } 
