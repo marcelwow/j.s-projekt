@@ -36,7 +36,6 @@ class UserManager {
     deleteUser(userId) {
         if (confirm('Czy na pewno chcesz usunąć tego użytkownika? Wszystkie jego zadania zostaną odprzypisane.')) {
             this.users = this.users.filter(user => user.id !== userId);
-            // Odprzypisz zadania tego użytkownika
             window.taskManager.unassignUserTasks(userId);
             this.saveToLocalStorage();
             this.renderUsers();

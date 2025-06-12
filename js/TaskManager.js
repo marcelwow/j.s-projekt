@@ -57,7 +57,6 @@ class TaskManager {
     getFilteredTasks() {
         let filteredTasks = [...this.tasks];
 
-        // Apply search filter
         if (this.searchQuery) {
             filteredTasks = filteredTasks.filter(task =>
                 task.content.toLowerCase().includes(this.searchQuery) ||
@@ -65,14 +64,12 @@ class TaskManager {
             );
         }
 
-        // Apply status filter
         if (this.currentFilter !== 'all') {
             filteredTasks = filteredTasks.filter(task =>
                 this.currentFilter === 'done' ? task.completed : !task.completed
             );
         }
 
-        // Apply sorting
         filteredTasks.sort((a, b) => {
             switch (this.currentSort) {
                 case 'priority':

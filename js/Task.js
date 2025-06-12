@@ -15,13 +15,35 @@ class Task {
     }
 
     isOverdue() {
-        if (!this.dueDate) return false;
-        return new Date(this.dueDate) < new Date() && !this.completed;
+        if (!this.dueDate || this.completed) return false;
+        return new Date(this.dueDate) < new Date();
     }
 
     getFormattedDueDate() {
-        if (!this.dueDate) return '';
         return new Date(this.dueDate).toLocaleDateString('pl-PL');
+    }
+
+    getPriorityLabel() {
+        const labels = {
+            high: 'Wysoki',
+            medium: 'Średni',
+            low: 'Niski'
+        };
+        return labels[this.priority] || this.priority;
+    }
+
+    getPriorityColor() {
+        const colors = {
+            high: 'danger',
+            medium: 'warning',
+            low: 'success'
+        };
+        return colors[this.priority] || 'secondary';
+    }
+
+    getUserName() {
+        const user = window.userManager.getUserById(this.userId);
+        return user ? user.name : 'Nieznany użytkownik';
     }
 
     toHTML() {
@@ -55,28 +77,5 @@ class Task {
         taskElement.appendChild(actions);
 
         return taskElement;
-    }
-
-    getPriorityColor() {
-        switch(this.priority) {
-            case 'high': return 'danger';
-            case 'medium': return 'primary';
-            case 'low': return 'success';
-            default: return 'secondary';
-        }
-    }
-
-    getPriorityLabel() {
-        switch(this.priority) {
-            case 'high': return 'Wysoki';
-            case 'medium': return 'Średni';
-            case 'low': return 'Niski';
-            default: return 'Nieznany';
-        }
-    }
-
-    getUserName() {
-        const user = window.userManager.getUserById(this.userId);
-        return user ? user.name : 'Nieznany użytkownik';
     }
 } 

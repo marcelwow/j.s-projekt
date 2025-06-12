@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.taskManager = taskManager;
     window.userManager = userManager;
 
-    // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -24,20 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
             : '<i class="bi bi-moon-fill"></i> Ciemny motyw';
     }
 
-    // User form handling
     const userForm = document.getElementById('userForm');
     userForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('username').value;
         if (name.trim()) {
             const user = userManager.addUser(name);
-            // Aktualizuj listę użytkowników w formularzu zadań
             updateUserSelect();
             userForm.reset();
         }
     });
 
-    // Funkcja aktualizująca listę użytkowników w formularzu zadań
     function updateUserSelect() {
         const userSelect = document.getElementById('taskUser');
         userSelect.innerHTML = '<option value="">Wybierz użytkownika (opcjonalnie)</option>';
@@ -49,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Task form handling
     const taskForm = document.getElementById('taskForm');
     taskForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -65,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Filter buttons
     const filterButtons = document.querySelectorAll('[data-filter]');
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -75,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Sort dropdown
     const sortDropdown = document.querySelectorAll('[data-sort]');
     sortDropdown.forEach(item => {
         item.addEventListener('click', (e) => {
@@ -85,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Search functionality
     const searchInput = document.getElementById('taskSearch');
     let searchTimeout;
     searchInput.addEventListener('input', (e) => {
@@ -95,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
-    // Initial render
     taskManager.renderTasks();
     userManager.renderUsers();
     updateUserSelect();
