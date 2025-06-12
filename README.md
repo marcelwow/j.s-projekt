@@ -4,27 +4,47 @@ Prosta aplikacja do zarządzania zadaniami napisana w czystym JavaScript, zgodni
 
 ## Funkcjonalności
 
+### Zarządzanie Zadaniami
 - Tworzenie i zarządzanie listą zadań
-- Dodawanie, edytowanie i usuwanie zadań
-- Oznaczanie zadań jako ukończone
+- Dodawanie, usuwanie i oznaczanie zadań jako ukończone
 - Filtrowanie zadań (wszystkie, do zrobienia, zakończone)
-- System użytkowników (tylko nazwa użytkownika)
+- Sortowanie zadań (po priorytecie, dacie, kategorii)
+- Wyszukiwanie zadań
+- Statystyki zadań (wszystkie, zakończone, do zrobienia, przeterminowane)
+
+### Funkcje Zadań
 - Priorytety zadań (niski, średni, wysoki)
 - Kategorie zadań (praca, nauka, hobby)
-- Lokalne przechowywanie danych (localStorage)
-- Responsywny interfejs użytkownika
+- Terminy wykonania zadań
+- Przypisywanie zadań do użytkowników
+- Oznaczanie zadań jako przeterminowane
 
-## Struktura projektu
+### System Użytkowników
+- Dodawanie i usuwanie użytkowników
+- Przypisywanie zadań do użytkowników
+- Automatyczne odprzypisywanie zadań przy usuwaniu użytkownika
+
+### Interfejs Użytkownika
+- Jasny i ciemny motyw
+- Intuicyjna nawigacja
+- Nowoczesny wygląd z wykorzystaniem Bootstrap 5
+
+### Przechowywanie Danych
+- Lokalne przechowywanie danych (localStorage)
+- Automatyczne zapisywanie zmian
+- Przywracanie stanu po odświeżeniu strony
+
+## Struktura Projektu
 
 - `index.html` - główny plik HTML
 - `styles.css` - style CSS
 - `js/`
   - `Task.js` - klasa reprezentująca pojedyncze zadanie
   - `TaskManager.js` - klasa zarządzająca zadaniami
-  - `User.js` - klasa reprezentująca użytkownika
+  - `User.js` - klasa reprezentująca użytkownika i zarządzająca użytkownikami
   - `app.js` - główny plik aplikacji
 
-## Jak uruchomić
+## Jak Uruchomić
 
 1. Sklonuj repozytorium
 2. Otwórz plik `index.html` w przeglądarce
@@ -32,7 +52,7 @@ Prosta aplikacja do zarządzania zadaniami napisana w czystym JavaScript, zgodni
 ## Wymagania
 
 - Nowoczesna przeglądarka internetowa z obsługą JavaScript
-- Połączenie z internetem (do załadowania Bootstrap)
+- Połączenie z internetem (do załadowania Bootstrap i ikon)
 
 ## Technologie
 
@@ -40,4 +60,12 @@ Prosta aplikacja do zarządzania zadaniami napisana w czystym JavaScript, zgodni
 - CSS3
 - JavaScript (ES6+)
 - Bootstrap 5
+- Bootstrap Icons
 - LocalStorage API
+
+## Funkcje w Planach
+
+- Edycja istniejących zadań
+- Edycja danych użytkowników
+- Filtrowanie po kategoriach
+- Filtrowanie po priorytetach
