@@ -1,4 +1,5 @@
 # Lista Zadań z Użytkownikami
+# Wykonawcy: Marcel Wawryniuk, Seweryn Majewski, Daniel Domżalski, Sebastian Świt 
 
 Prosta aplikacja do zarządzania zadaniami napisana w czystym JavaScript, zgodnie z zasadami programowania obiektowego (OOP).
 
